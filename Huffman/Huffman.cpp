@@ -6,8 +6,8 @@
 #include <string>
 int main()
 {
-    Encoder::Huffman(std::string("input.txt"), std::string("output.txt"));
-    Decoder::Huffman(std::string("output.txt"), std::string("output1.txt"));
+    Encoder::Huffman(std::string("input.png"), std::string("output.txt"));
+    Decoder::Huffman(std::string("output.txt"), std::string("output1.png"));
 }
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"

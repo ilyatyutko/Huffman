@@ -208,17 +208,18 @@ static class Encoder: public Coder
 private:
 	static std::map<char, unsigned long long> getFrequencyTable(std::string const& text)
 	{
+		std::ifstream in(text, std::ios_base::binary);
 		std::map<char, unsigned long long> result;
-		std::for_each(
-			text.begin(),
-			text.end(),
-			[&](char sign) {
-				auto itr = result.find(sign);
-				if (itr == result.end())
-					result.insert(std::make_pair(sign, 1));
-				else
-					++(itr->second);
-			});
+		while(!in.eof())
+		{
+			char sign = in.get();
+			auto itr = result.find(sign);
+			if (itr == result.end())
+				result.insert(std::make_pair(sign, 1));
+			else
+				++(itr->second);
+			}
+		in.close();
 		return result;
 	}
 	static std::map<char, unsigned long long> getFrequencyTable(std::ifstream& input)
@@ -268,9 +269,17 @@ private:
 					out << vect[i];
 			}
 		);
+		long long q = 0;
+		std::for_each(
+			FrequencyTable.begin(),
+			FrequencyTable.end(),
+			[&q](std::pair<char, unsigned long long> toWrit) {q += toWrit.second; }
+		);
 
+		int qwe = 0;
 		while (!in.eof())
-		{
+		{		
+			++qwe;
 			char symbol = in.get();
 			auto writeArray = Cypher.find(symbol)->second;
 			for (int i = 0; i < writeArray.size() ;++i)
@@ -284,11 +293,7 @@ private:
 public:
 	static void Huffman(std::string textFileInput, std::string textFileOutput)
 	{
-		std::ifstream input(textFileInput);
-		if (!input.is_open())
-			throw std::exception("UncorrectFileName");
-		auto FrequencyTable = Encoder::getFrequencyTable(input);
-		input.close();
+		auto FrequencyTable = Encoder::getFrequencyTable(textFileInput);
 		auto Cypher = Coder::getCypher(FrequencyTable);
 		WriteEncoded(textFileInput, textFileOutput, FrequencyTable, Cypher);
 	}
@@ -320,7 +325,7 @@ private:
 		, std::string& outputFile)
 	{
 		ibitfstream in(inputFile.c_str());
-		std::ofstream out(outputFile);
+		std::ofstream out(outputFile, std::ios_base::binary);
 
 		int SymbolsCount = ReadInt(in);
 
